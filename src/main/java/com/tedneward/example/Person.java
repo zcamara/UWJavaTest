@@ -3,21 +3,51 @@ package com.tedneward.example;
 import java.beans.*;
 import java.util.*;
 
-public class Person {
+public class Person implements Comparable<Person>{
   private int age;
   private String name;
   private double salary;
   private String ssn;
   private boolean propertyChangeFired = false;
+  private int numPeople = 0;
   
+  public static ArrayList<Person> getNewardFamily() {
+    ArrayList result = new ArrayList<Person>();
+    result.add(new Person("Ted", 41, 250000));
+    result.add(new Person("Charlotte", 43, 150000));
+    result.add(new Person("Michael", 22, 10000));
+    result.add(new Person("Matthew", 15, 0));
+    return result;
+  }
+
   public Person() {
     this("", 0, 0.0d);
   }
-  
+
   public Person(String n, int a, double s) {
     name = n;
     age = a;
     salary = s;
+    ssn = "";
+    numPeople++;
+  }
+
+  public int count() {
+    return numPeople;
+  }
+
+  public void setAge(int newAge) {
+    if(newAge > -1)
+      this.age = newAge;
+    else
+      throw new IllegalArgumentException(newAge + " is not a valid age");
+  }
+
+  public void setName(String newName) {
+    if(newName != null && !newName.isEmpty())
+      this.name = newName;
+    else
+      throw new IllegalArgumentException("Invalid or null name.");
   }
 
   public int getAge() {
@@ -35,6 +65,11 @@ public class Person {
   public String getSSN() {
     return ssn;
   }
+
+  public void setSalary(double s){
+    this.salary = s;
+  }
+
   public void setSSN(String value) {
     String old = ssn;
     ssn = value;
@@ -58,12 +93,17 @@ public class Person {
     return age + 10;
   }
   
-  public boolean equals(Person other) {
-    return (this.name.equals(p.name) && this.age == p.age);
+  @Override
+  public boolean equals(Object other) { //might need a "weird" handler
+    if (other instanceof Person) {
+      Person p = (Person)other;
+      return (this.name.equals(p.getName()) && this.age == p.getAge());
+    }
+    return false;
   }
 
-  public String tostring() {
-    return "{{FIXME}}";
+  public String toString() {
+    return "[Person name:"+name+" age:"+age+" salary:"+salary+"]";
   }
 
   // PropertyChangeListener support; you shouldn't need to change any of
@@ -76,4 +116,22 @@ public class Person {
   public void removePropertyChangeListener(PropertyChangeListener listener) {
       this.pcs.removePropertyChangeListener(listener);
   }
+
+  public static class AgeComparator implements Comparator<Person> {
+    @Override
+    public int compare(Person p1, Person p2) {
+      return p1.getAge() - p2.getAge();
+    }
+  }
+
+  @Override
+  public int compareTo(Person p) {
+    if(p.getSalary() == this.salary)//equal
+      return 0;
+    else if (p.getSalary() > this.salary) //p is richer than this, move p forward
+      return 1;
+    else  //p is not richer than this
+      return -1; 
+  }
+
 }
