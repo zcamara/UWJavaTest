@@ -1,3 +1,5 @@
+//Zach Camara - 1124687
+//Info 498 - Assignment 1
 package com.tedneward.example;
 
 import java.beans.*;
